@@ -8,8 +8,8 @@ export function Footer({ profile }: { profile: Profile }) {
     <footer className="border-t border-border-soft px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-4 text-xs text-text-faint sm:flex-row sm:items-center">
         <p>
-          © {new Date().getFullYear()} {profile.brand} · Built with Next.js,
-          React Flow & a self-hosted homelab.
+          © {new Date().getFullYear()} {profile.brand} · PostgreSQL + FastAPI +
+          Next.js, React Flow & a self-hosted homelab.
         </p>
         <div className="flex items-center gap-4">
           <a
