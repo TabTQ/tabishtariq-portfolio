@@ -21,7 +21,7 @@ export default async function ContactPage() {
       <PageHeader
         eyebrow="Contact"
         title="Let's talk"
-        description="Open to data-engineering roles and interesting infrastructure problems. The fastest way to reach me is email."
+        description="The fastest way to reach me is email."
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
