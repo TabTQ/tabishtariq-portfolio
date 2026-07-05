@@ -5,18 +5,21 @@ import { PageHeader, SectionHeading } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { DiagramPanel } from "@/components/diagram/DiagramPanel";
-import { homelabDiagram } from "@/data/diagrams";
-import { proxmox, raspberryPi, network } from "@/data/homelab";
+import { getDiagram, getHomelab } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Homelab" };
 
-const subsystems = [
-  { href: "/homelab/proxmox", icon: "Boxes", name: proxmox.name, summary: proxmox.summary },
-  { href: "/homelab/raspberry-pi", icon: "Cpu", name: raspberryPi.name, summary: raspberryPi.summary },
-  { href: "/homelab/network", icon: "Network", name: network.name, summary: network.summary },
-];
-
-export default function HomelabPage() {
+export default async function HomelabPage() {
+  const [homelabDiagram, homelab] = await Promise.all([
+    getDiagram("homelab"),
+    getHomelab(),
+  ]);
+  const subsystems = [
+    { href: "/homelab/proxmox", icon: "Boxes", name: homelab.proxmox?.name, summary: homelab.proxmox?.summary },
+    { href: "/homelab/raspberry-pi", icon: "Cpu", name: homelab.raspberryPi?.name, summary: homelab.raspberryPi?.summary },
+    { href: "/homelab/network", icon: "Network", name: homelab.network?.name, summary: homelab.network?.summary },
+  ].filter((s) => s.name);
   return (
     <div className="space-y-8">
       <PageHeader

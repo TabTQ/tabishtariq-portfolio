@@ -3,18 +3,19 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/BrandIcons";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
-import { profile } from "@/data/profile";
+import { getProfile } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Contact" };
 
-const channels = [
-  { icon: Mail, label: "Email", value: profile.email, href: `mailto:${profile.email}` },
-  { icon: Phone, label: "Phone", value: profile.phone, href: `tel:${profile.phone.replace(/\s/g, "")}` },
-  { icon: GithubIcon, label: "GitHub", value: profile.socials.githubLabel, href: profile.socials.github },
-  { icon: LinkedinIcon, label: "LinkedIn", value: profile.socials.linkedinLabel, href: profile.socials.linkedin },
-];
-
-export default function ContactPage() {
+export default async function ContactPage() {
+  const profile = await getProfile();
+  const channels = [
+    { icon: Mail, label: "Email", value: profile.email, href: `mailto:${profile.email}` },
+    { icon: Phone, label: "Phone", value: profile.phone, href: `tel:${profile.phone.replace(/\s/g, "")}` },
+    { icon: GithubIcon, label: "GitHub", value: profile.socials.githubLabel, href: profile.socials.github },
+    { icon: LinkedinIcon, label: "LinkedIn", value: profile.socials.linkedinLabel, href: profile.socials.linkedin },
+  ];
   return (
     <div className="space-y-8">
       <PageHeader

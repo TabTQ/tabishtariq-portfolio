@@ -6,11 +6,9 @@ import { PageHeader, SectionHeading } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { BulletList } from "@/components/ui/Bullet";
-import { experiences, getExperience } from "@/data/experience";
+import { getExperience } from "@/lib/api";
 
-export function generateStaticParams() {
-  return experiences.map((e) => ({ slug: e.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -18,7 +16,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const e = getExperience(slug);
+  const e = await getExperience(slug);
   return { title: e ? `${e.role} · ${e.company}` : "Experience" };
 }
 
@@ -28,7 +26,7 @@ export default async function ExperienceDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const e = getExperience(slug);
+  const e = await getExperience(slug);
   if (!e) notFound();
 
   return (

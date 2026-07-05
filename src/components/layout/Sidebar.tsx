@@ -3,16 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navGroups } from "./nav";
-import { profile } from "@/data/profile";
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/cn";
+import type { Profile } from "@/lib/types";
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+export function Sidebar({
+  profile,
+  onNavigate,
+}: {
+  profile: Profile;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
 
   return (

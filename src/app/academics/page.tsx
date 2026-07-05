@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import { PageHeader, SectionHeading } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
-import type { ResearchItem } from "@/data/types";
-import { education, publications, certifications } from "@/data/research";
+import type { ResearchItem } from "@/lib/types";
+import { getAcademics } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Academics" };
 
 function ItemRow({ item }: { item: ResearchItem }) {
@@ -39,7 +40,11 @@ function ItemRow({ item }: { item: ResearchItem }) {
   );
 }
 
-export default function ResearchPage() {
+export default async function ResearchPage() {
+  const items = await getAcademics();
+  const education = items.filter((i) => i.type === "Degree");
+  const publications = items.filter((i) => i.type === "Publication");
+  const certifications = items.filter((i) => i.type === "Certification");
   return (
     <div className="space-y-8">
       <PageHeader

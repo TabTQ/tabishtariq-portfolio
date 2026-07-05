@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/BrandIcons";
-import { profile } from "@/data/profile";
+import type { Profile } from "@/lib/types";
 
-export function Footer() {
+export function Footer({ profile }: { profile: Profile }) {
   return (
     <footer className="border-t border-border-soft px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-start justify-between gap-4 text-xs text-text-faint sm:flex-row sm:items-center">

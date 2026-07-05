@@ -6,10 +6,15 @@ import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Chip } from "@/components/ui/Chip";
 import { SectionHeading } from "@/components/ui/PageHeader";
-import { hubDiagram } from "@/data/diagrams";
-import { profile } from "@/data/profile";
+import { getDiagram, getProfile } from "@/lib/api";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const [profile, hubDiagram] = await Promise.all([
+    getProfile(),
+    getDiagram("hub"),
+  ]);
   return (
     <div className="space-y-8">
       {/* Hero */}

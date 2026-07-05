@@ -5,11 +5,13 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { StatCard } from "@/components/ui/StatCard";
-import { profile } from "@/data/profile";
+import { getProfile } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "About" };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const profile = await getProfile();
   return (
     <div className="space-y-8">
       <PageHeader

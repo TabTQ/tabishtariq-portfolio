@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { PageHeader, SectionHeading } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { DiagramPanel } from "@/components/diagram/DiagramPanel";
-import { rpiDiagram } from "@/data/diagrams";
-import { raspberryPi } from "@/data/homelab";
+import { getDiagram, getHomelab } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Raspberry Pi Stack" };
 
-export default function RaspberryPiPage() {
+export default async function RaspberryPiPage() {
+  const [rpiDiagram, homelab] = await Promise.all([
+    getDiagram("rpi"),
+    getHomelab(),
+  ]);
+  const raspberryPi = homelab.raspberryPi;
+  if (!raspberryPi) notFound();
+
   return (
     <div className="space-y-8">
       <Link
@@ -22,7 +30,7 @@ export default function RaspberryPiPage() {
       <PageHeader
         eyebrow="Homelab"
         title={raspberryPi.name}
-        description={raspberryPi.summary}
+        description={raspberryPi.summary ?? undefined}
       />
 
       <Card>
@@ -62,26 +70,28 @@ export default function RaspberryPiPage() {
               <tbody className="divide-y divide-border-soft">
                 {raspberryPi.services.map((s) => (
                   <tr
-                    key={s.container}
-                    id={s.container}
+                    key={s.id}
+                    id={s.containerName ?? undefined}
                     className="scroll-mt-24 hover:bg-surface-2/50"
                   >
-                    <td className="px-3 py-2 text-text">{s.service}</td>
+                    <td className="px-3 py-2 text-text">{s.serviceName}</td>
                     <td className="px-3 py-2 font-mono text-[11px] text-text-muted">
-                      {s.container}
+                      {s.containerName}
                     </td>
                     <td className="px-3 py-2 font-mono text-[11px] text-text-muted">
                       {s.hostPort}
                     </td>
                     <td className="hidden px-3 py-2 text-text-muted sm:table-cell">
-                      {s.fn}
+                      {s.function}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs text-text-faint">{raspberryPi.backup}</p>
+          {raspberryPi.extra.backup ? (
+            <p className="mt-3 text-xs text-text-faint">{raspberryPi.extra.backup}</p>
+          ) : null}
         </Card>
       </div>
     </div>

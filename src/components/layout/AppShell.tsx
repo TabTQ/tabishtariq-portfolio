@@ -6,8 +6,15 @@ import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { Footer } from "./Footer";
 import { cn } from "@/lib/cn";
+import type { Profile } from "@/lib/types";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  profile,
+  children,
+}: {
+  profile: Profile;
+  children: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -15,7 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 border-r border-border lg:block">
         <div className="sticky top-0 h-screen">
-          <Sidebar />
+          <Sidebar profile={profile} />
         </div>
       </aside>
 
@@ -46,7 +53,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           >
             <X size={18} />
           </button>
-          <Sidebar onNavigate={() => setOpen(false)} />
+          <Sidebar profile={profile} onNavigate={() => setOpen(false)} />
         </div>
       </div>
 
@@ -56,7 +63,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-6xl">{children}</div>
         </main>
-        <Footer />
+        <Footer profile={profile} />
       </div>
     </div>
   );

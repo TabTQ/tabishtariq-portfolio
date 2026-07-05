@@ -3,7 +3,9 @@ import { Inter, Fraunces, JetBrains_Mono } from "next/font/google";
 import "@xyflow/react/dist/style.css";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
-import { profile } from "@/data/profile";
+import { getProfile } from "@/lib/api";
+
+export const dynamic = "force-dynamic";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,24 +26,28 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: `${profile.name} — ${profile.title}`,
-    template: `%s · ${profile.name}`,
-  },
-  description: profile.summary,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const profile = await getProfile();
+  return {
+    title: {
+      default: `${profile.name} — ${profile.title}`,
+      template: `%s · ${profile.name}`,
+    },
+    description: profile.summary,
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const profile = await getProfile();
   return (
     <html
       lang="en"
       className={`${inter.variable} ${fraunces.variable} ${jetbrains.variable} h-full`}
     >
       <body className="min-h-full bg-bg text-text">
-        <AppShell>{children}</AppShell>
+        <AppShell profile={profile}>{children}</AppShell>
       </body>
     </html>
   );

@@ -5,12 +5,16 @@ import { PageHeader, SectionHeading } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { DiagramPanel } from "@/components/diagram/DiagramPanel";
-import { experienceDiagram } from "@/data/diagrams";
-import { experiences } from "@/data/experience";
+import { getDiagram, getExperiences } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Experience" };
 
-export default function ExperiencePage() {
+export default async function ExperiencePage() {
+  const [experienceDiagram, experiences] = await Promise.all([
+    getDiagram("experience"),
+    getExperiences(),
+  ]);
   return (
     <div className="space-y-8">
       <PageHeader

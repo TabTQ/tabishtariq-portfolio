@@ -4,12 +4,16 @@ import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
 import { DiagramPanel } from "@/components/diagram/DiagramPanel";
-import { skillsDiagram } from "@/data/diagrams";
-import { skillGroups } from "@/data/skills";
+import { getDiagram, getSkillGroups } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Skills" };
 
-export default function SkillsPage() {
+export default async function SkillsPage() {
+  const [skillsDiagram, skillGroups] = await Promise.all([
+    getDiagram("skills"),
+    getSkillGroups(),
+  ]);
   return (
     <div className="space-y-8">
       <PageHeader

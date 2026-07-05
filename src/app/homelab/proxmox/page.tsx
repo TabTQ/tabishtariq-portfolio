@@ -1,16 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { PageHeader, SectionHeading } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { DiagramPanel } from "@/components/diagram/DiagramPanel";
-import { proxmoxDiagram } from "@/data/diagrams";
-import { proxmox } from "@/data/homelab";
+import { getDiagram, getHomelab } from "@/lib/api";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Proxmox VE Node" };
 
-export default function ProxmoxPage() {
+export default async function ProxmoxPage() {
+  const [proxmoxDiagram, homelab] = await Promise.all([
+    getDiagram("proxmox"),
+    getHomelab(),
+  ]);
+  const proxmox = homelab.proxmox;
+  if (!proxmox) notFound();
+
   return (
     <div className="space-y-8">
       <Link
@@ -20,7 +28,7 @@ export default function ProxmoxPage() {
         <ArrowLeft size={14} /> Homelab
       </Link>
 
-      <PageHeader eyebrow="Homelab" title={proxmox.name} description={proxmox.summary} />
+      <PageHeader eyebrow="Homelab" title={proxmox.name} description={proxmox.summary ?? undefined} />
 
       <Card>
         <SectionHeading title="Node map" hint="click a container" />
@@ -42,13 +50,15 @@ export default function ProxmoxPage() {
               </div>
             ))}
           </dl>
-          <p className="mt-3 text-xs text-text-faint">{proxmox.network}</p>
+          {proxmox.extra.network ? (
+            <p className="mt-3 text-xs text-text-faint">{proxmox.extra.network}</p>
+          ) : null}
         </Card>
 
         <Card className="lg:col-span-2">
           <SectionHeading title="External access" />
           <div className="flex flex-wrap gap-2">
-            {proxmox.access.map((a) => (
+            {(proxmox.extra.access ?? []).map((a) => (
               <Chip key={a} tone="accent">
                 {a}
               </Chip>
@@ -67,12 +77,12 @@ export default function ProxmoxPage() {
         <SectionHeading title="LXC containers" />
         <div className="grid gap-4 md:grid-cols-2">
           {proxmox.containers.map((c) => (
-            <Card key={c.id} id={c.id} className="scroll-mt-24 transition-shadow">
+            <Card key={c.containerKey} id={c.containerKey} className="scroll-mt-24 transition-shadow">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="font-serif text-base text-text">{c.name}</h3>
                   <p className="text-xs text-text-faint">
-                    {c.id.toUpperCase()} · {c.ip}
+                    {c.containerKey.toUpperCase()} · {c.ipAddress}
                   </p>
                 </div>
                 <Chip tone={c.status === "Idle" ? "gold" : "sage"} dot>
