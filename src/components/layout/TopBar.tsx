@@ -83,7 +83,9 @@ export function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
         <Chip tone="sage" dot>
           available
         </Chip>
-        <Chip tone="neutral">remote</Chip>
+        <Chip tone="sage" dot>
+          remote
+        </Chip>
       </div>
 
       <div className="hidden font-mono text-xs tabular-nums text-text-muted md:block">
