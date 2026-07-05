@@ -1,0 +1,23 @@
+# Production deployment (e.g. Proxmox LXC). Postgres itself is external —
+# point the backend at it via backend/.env (or environment overrides here).
+services:
+  backend:
+    build: ./backend
+    env_file: ./backend/.env
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      args:
+        BACKEND_API_URL: http://backend:8000
+    environment:
+      BACKEND_API_URL: http://backend:8000
+      ADMIN_COOKIE_NAME: portfolio_admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped

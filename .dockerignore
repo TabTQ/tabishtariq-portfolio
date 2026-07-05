@@ -1,0 +1,7 @@
+node_modules
+.next
+backend
+.env*
+.git
+.claude
+references
