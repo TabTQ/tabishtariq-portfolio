@@ -4,7 +4,8 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 import { ArrowUpRight } from "lucide-react";
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/cn";
-import type { MapNode } from "@/data/types";
+import { nodeVisualState, useDiagramState } from "./DiagramState";
+import type { MapNode } from "@/lib/types";
 
 export type FlowNodeData = MapNode & { dir: "TB" | "LR" };
 
@@ -36,12 +37,15 @@ function Handles({ dir }: { dir: "TB" | "LR" }) {
 }
 
 function BaseNode({
+  id,
   data,
   size = "md",
 }: {
+  id: string;
   data: FlowNodeData;
   size?: "sm" | "md" | "lg";
 }) {
+  const { active, dimmed } = nodeVisualState(id, useDiagramState());
   const clickable = Boolean(data.route);
   const accent = data.accent ?? "accent";
   const sizes = {
@@ -49,6 +53,8 @@ function BaseNode({
     md: "w-full px-4 py-3",
     lg: "w-full px-5 py-4",
   };
+  const tooltip = `${data.label}${data.sublabel ? ` — ${data.sublabel}` : ""}`;
+  const mayTruncate = tooltip.length > 30;
   return (
     <div
       data-clickable={clickable}
@@ -57,9 +63,16 @@ function BaseNode({
         sizes[size],
         clickable && "cursor-pointer hover:-translate-y-0.5 hover:shadow-lg",
         accentRing[accent],
+        active && "border-accent ring-2 ring-accent/50",
+        dimmed && "opacity-30",
       )}
     >
       <Handles dir={data.dir} />
+      {mayTruncate ? (
+        <span className="pointer-events-none absolute -top-2 left-1/2 z-20 w-max max-w-72 -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-bg-2 px-2.5 py-1.5 text-[11px] leading-snug text-text opacity-0 shadow-lg transition-opacity delay-300 group-hover:opacity-100">
+          {tooltip}
+        </span>
+      ) : null}
       {data.icon ? (
         <span
           className={cn(
@@ -95,10 +108,17 @@ function BaseNode({
   );
 }
 
-function RootNode({ data }: NodeProps) {
+function RootNode({ id, data }: NodeProps) {
   const d = data as unknown as FlowNodeData;
+  const { active, dimmed } = nodeVisualState(id, useDiagramState());
   return (
-    <div className="relative flex w-full items-center gap-3 rounded-xl border border-accent/50 bg-linear-to-br from-surface to-surface-2 px-5 py-4 shadow-lg ring-1 ring-accent/20">
+    <div
+      className={cn(
+        "relative flex w-full items-center gap-3 rounded-xl border border-accent/50 bg-linear-to-br from-surface to-surface-2 px-5 py-4 shadow-lg ring-1 ring-accent/20 transition-opacity",
+        active && "ring-2 ring-accent/60",
+        dimmed && "opacity-30",
+      )}
+    >
       <Handles dir={d.dir} />
       {d.icon ? (
         <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-bg-2">
@@ -115,10 +135,12 @@ function RootNode({ data }: NodeProps) {
   );
 }
 
-const make =
-  (size: "sm" | "md" | "lg") =>
-  ({ data }: NodeProps) =>
-    <BaseNode data={data as unknown as FlowNodeData} size={size} />;
+function make(size: "sm" | "md" | "lg") {
+  function SizedNode({ id, data }: NodeProps) {
+    return <BaseNode id={id} data={data as unknown as FlowNodeData} size={size} />;
+  }
+  return SizedNode;
+}
 
 export const nodeTypes = {
   root: RootNode,
